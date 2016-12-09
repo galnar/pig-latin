@@ -1,0 +1,7 @@
+.idea/*
+log/*
+temp/*
+vendor/*
+!.gitignore
+!.htaccess
+!web.config
