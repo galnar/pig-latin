@@ -2,10 +2,17 @@
 
 namespace App\TranslatorModule\Presenters;
 
+use App\Model\Entity\Translation;
+use App\Model\Repository\TranslatorRepository;
 use App\Presenters\BasePresenter;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\DateTime;
 
+/**
+ * Class TranslatorPresenter
+ * @package App\TranslatorModule\Presenters
+ */
 class TranslatorPresenter extends BasePresenter
 {
     const FORM_COMPONENT_NAME = 'pigLatinTranslatorForm';
@@ -17,10 +24,13 @@ class TranslatorPresenter extends BasePresenter
     const VOWEL_END = 'way';
     const CONSONANT_END = 'ay';
 
+    /** @var TranslatorRepository @inject */
+    public $translatorRepository;
+
+
 	public function renderDefault()
 	{
-        $stringToTranslate = "Some test string used for testing functionality of pig latin translator";
-
+        $this->template->lastTranslations = $this->translatorRepository->getBy([], ['date' => 'DESC'], 5);
 	}
 
     /**
@@ -50,10 +60,17 @@ class TranslatorPresenter extends BasePresenter
      */
     public function pigLatinTranslatorFormSuccess(Form $form, $values)
     {
+        $originalString = strtolower(trim($values[self::FORM_TEXT_INPUT]));
         $translatedString = $this->translateString(
-            strtolower(trim($values[self::FORM_TEXT_INPUT])),
+            $originalString,
             $form->isSubmitted()->getName() === self::FORM_SAVE_TO ? true : false
         );
+
+        $translation = new Translation();
+        $translation->setDate(new DateTime());
+        $translation->setOriginalString($originalString);
+        $translation->setTranslatedString($translatedString);
+        $this->translatorRepository->updateEntity($translation);
 
         $this->template->translatedText = $translatedString;
         $this->redrawControl();

@@ -22,5 +22,20 @@
                 <code>{$translatedText}</code>
             {/ifset}
         {/snippet}
+
+        {snippet lastTranslations}
+            <div class="lastTranslations">
+                <div>
+                    <strong>Last translations</strong>
+                </div>
+                <div>
+                    {foreach $lastTranslations as $translation}
+                        <small>{$translation->getDate()|date:'d.m.Y H:i'}</small><br />
+                        {$translation->getOriginalString()} -> {$translation->getTranslatedString()}
+                        <hr>
+                    {/foreach}
+                </div>
+            </div>
+        {/snippet}
     </div>
 {/block}
