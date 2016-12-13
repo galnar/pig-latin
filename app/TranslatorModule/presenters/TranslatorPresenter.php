@@ -3,9 +3,16 @@
 namespace App\TranslatorModule\Presenters;
 
 use App\Presenters\BasePresenter;
+use Nette\Application\UI\Form;
+use Nette\Utils\ArrayHash;
 
 class TranslatorPresenter extends BasePresenter
 {
+    const FORM_COMPONENT_NAME = 'pigLatinTranslatorForm';
+    const FORM_TEXT_INPUT = 'textInput';
+    const FORM_SAVE_TO = 'translateToPigLatin';
+    const FORM_SAVE_FROM = 'translateFromPigLatin';
+
     const VOWELS = ['a', 'e', 'i', 'o', 'u'];
     const VOWEL_END = 'way';
     const CONSONANT_END = 'ay';
@@ -13,12 +20,44 @@ class TranslatorPresenter extends BasePresenter
 	public function renderDefault()
 	{
         $stringToTranslate = "Some test string used for testing functionality of pig latin translator";
-        dump($stringToTranslate);
-        $translatedString = $this->translateString(strtolower($stringToTranslate), true);
-        dump($translatedString);
-        $translatedString = $this->translateString($translatedString, false);
-        dump($translatedString);
+
 	}
+
+    /**
+     * @return Form
+     */
+    protected function createComponentPigLatinTranslatorForm()
+    {
+        $form = new Form();
+        $form->getElementPrototype()->class = 'ajax';
+
+        $form->addTextArea(self::FORM_TEXT_INPUT, 'Text to translate')
+            ->setAttribute('class', 'form-control');
+
+        $form->addSubmit(self::FORM_SAVE_TO, 'Translate to Pig Latin')
+            ->setAttribute('class', 'btn btn-primary');
+        $form->addSubmit(self::FORM_SAVE_FROM, 'Translate from Pig Latin')
+            ->setAttribute('class', 'btn btn-primary');
+
+        $form->onSuccess[] = [$this, 'pigLatinTranslatorFormSuccess'];
+
+        return $form;
+    }
+
+    /**
+     * @param Form $form
+     * @param ArrayHash $values
+     */
+    public function pigLatinTranslatorFormSuccess(Form $form, $values)
+    {
+        $translatedString = $this->translateString(
+            strtolower(trim($values[self::FORM_TEXT_INPUT])),
+            $form->isSubmitted()->getName() === self::FORM_SAVE_TO ? true : false
+        );
+
+        $this->template->translatedText = $translatedString;
+        $this->redrawControl();
+    }
 
     /**
      * Translate given string to Pig Latin

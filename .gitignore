@@ -2,6 +2,7 @@
 log/*
 temp/*
 vendor/*
+www/bower/*
 !.gitignore
 !.htaccess
 !web.config

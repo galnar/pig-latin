@@ -1,0 +1,20 @@
+{
+  "name": "pig-latin",
+  "homepage": "https://github.com/galnar1/pig-latin",
+  "authors": [
+    "galnar1 <tomas.peska@gmail.com>"
+  ],
+  "description": "Pig latin translator",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7"
+  }
+}
